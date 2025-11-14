@@ -61,7 +61,7 @@
 
         #features {
             top: 0;
-            height: 125px;
+            height: 100px;
             margin-top: 20px;
             width: 250px;
         }
@@ -70,7 +70,7 @@
             padding: 10px;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
             line-height: 18px;
-            height: 235px;
+            height: 210px;
             margin-bottom: 40px;
             width: 150px;
         }
@@ -93,9 +93,9 @@
 <body>
     <div id="map"></div>
     <div class='map-overlay' id='features'>
-        <h2>US COVID Vaccine Rate per County</h2>
+        <h2>US population density</h2>
         <div id='text-description'>
-            <p>Hover over a County!</p>
+            <p>Hover over a state!</p>
         </div>
     </div>
     <div class='map-overlay' id='legend'></div>
@@ -105,75 +105,75 @@
         const map = new mapboxgl.Map({
                 container: 'map', // container ID
                 style: 'mapbox://styles/mapbox/light-v10', // style URL
-                zoom: 6.5, // starting zoom
-                center: [-121, 47.2] // starting center
+                zoom: 3, // starting zoom
+                center: [-100, 40] // starting center
             }
         );
 
         const layers = [
-            '0-3000',
-            '3000-3500',
-            '3500-4250',
-            '4250-4750',
-            '4750-5500',
-            '5500-6250',
-            '6250-7000',
-            '7000 and more'
+            '0-9',
+            '10-19',
+            '20-49',
+            '50-99',
+            '100-199',
+            '200-499',
+            '500-999',
+            '1000 and more'
         ];
         const colors = [
-            '#FFFF00',
-            '#F2E53C',
-            '#D5C878',
-            '#A8ADAE',
-            '#7A92D4',
-            '#5077EB',
-            '#265CE0',
-            '#0039A6'
+            '#FFEDA070',
+            '#FED97670',
+            '#FEB24C70',
+            '#FD8D3C70',
+            '#FC4E2A70',
+            '#E31A1C70',
+            '#BD002670',
+            '#80002670'
         ];
 
         // load data and add as layer
         async function geojsonFetch() {
-            let response = await fetch('assets/wa-covid-data-102521.geojson');
-            let covidData = await response.json();
+            let response = await fetch('assets/state_data.geojson');
+            let stateData = await response.json();
 
             map.on('mousemove', ({point}) => {
-                const county = map.queryRenderedFeatures(point, {
-                    layers: ['covidData-layer']
+                const state = map.queryRenderedFeatures(point, {
+                    layers: ['stateData-layer']
                 });
-                document.getElementById('text-description').innerHTML = county.length ?
-                    `<h3>${county[0].properties.name}</h3><p><strong><em>${county[0].properties.fullyVaxPer10k}</strong> Vaccinated per 10k</em></p>` :
+                document.getElementById('text-description').innerHTML = state.length ?
+                    `<h3>${state[0].properties.name}</h3><p><strong><em>${state[0].properties.density}</strong> people per square mile</em></p>` :
                     `<p>Hover over a state!</p>`;
             });
 
             map.on('load', function loadingData() {
-                map.addSource('wa-covid-data-102521', {
+                map.addSource('stateData', {
                     type: 'geojson',
-                    data: covidData
+                    data: stateData
                 });
 
                 map.addLayer({
-                    'id': 'covidData-layer',
+                    'id': 'stateData-layer',
                     'type': 'fill',
-                    'source': 'wa-covid-data-102521',
+                    'source': 'stateData',
                     'paint': {
                         'fill-color': [
                             'step',
-                            ['get', 'fullyVaxPer10k'],
-                            '#FFFF00',   // stop_output_0
-                            1000,          // stop_input_0
-                            '#F2E53C',   // stop_output_1
-                            3500,          // stop_input_1
-                            '#D5C878',   // stop_output_2
-                            4250,          // stop_input_2
-                            '#A8ADAE',   // stop_output_3
-                            4750,         // stop_input_3
-                            '#7A92D4',   // stop_output_4
-                            5500,         // stop_input_4
-                            '#5077EB',   // stop_output_5
-                            6250,         // stop_input_5
-                            '#265CE0',   // stop_output_6
-                            7000,        // stop_input_6
-                            "#0039A6"    // stop_output_7
+                            ['get', 'density'],
+                            '#FFEDA0',   // stop_output_0
+                            10,          // stop_input_0
+                            '#FED976',   // stop_output_1
+                            20,          // stop_input_1
+                            '#FEB24C',   // stop_output_2
+                            50,          // stop_input_2
+                            '#FD8D3C',   // stop_output_3
+                            100,         // stop_input_3
+                            '#FC4E2A',   // stop_output_4
+                            200,         // stop_input_4
+                            '#E31A1C',   // stop_output_5
+                            500,         // stop_input_5
+                            '#BD0026',   // stop_output_6
+                            1000,        // stop_input_6
+                            "#800026"    // stop_output_7
                         ],
                         'fill-outline-color': '#BBBBBB',
                         'fill-opacity': 0.7,
@@ -181,7 +181,7 @@
                 });
 
                 const legend = document.getElementById('legend');
-                legend.innerHTML = "<b>Vaccines per 10 Thousand People<br>(Cases/10k People.)</b><br><br>";
+                legend.innerHTML = "<b>Population Density<br>(people/sq.mi.)</b><br><br>";
 
                 layers.forEach((layer, i) => {
                     const color = colors[i];
