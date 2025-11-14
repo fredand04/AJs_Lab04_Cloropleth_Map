@@ -142,7 +142,7 @@
                 });
                 document.getElementById('text-description').innerHTML = county.length ?
                     `<h3>${county[0].properties.name}</h3><p><strong><em>${county[0].properties.fullyVaxPer10k}</strong> Vaccinated per 10k</em></p>` :
-                    `<p>Hover over a state!</p>`;
+                    `<p>Hover over a County!</p>`;
             });
 
             map.on('load', function loadingData() {
@@ -181,7 +181,7 @@
                 });
 
                 const legend = document.getElementById('legend');
-                legend.innerHTML = "<b>Vaccines per 10 Thousand People<br>(Cases/10k People.)</b><br><br>";
+                legend.innerHTML = "<b>Vaccines per 10 Thousand People<br>(Vanninated/10k People.)</b><br><br>";
 
                 layers.forEach((layer, i) => {
                     const color = colors[i];
